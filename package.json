@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "lodash": "*",
-    "rx": "*"
+    "rx": "*",
+    "mkpath": "*"
   },
   "keywords": [
     "rx",

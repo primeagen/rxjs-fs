@@ -2,6 +2,7 @@
 var Rx = require('rx');
 var _ = require('lodash');
 var fs = require('fs');
+var mkpath = require('mkpath');
 
 var Observable = Rx.Observable;
 var observableProto = Observable.prototype;
@@ -293,6 +294,23 @@ function writeFile(path, file) {
 	return makeDirsObs.ignoreElements().concat(writeFileObs);
 };
 
+//
+// Makes the path using the mkpath npm module
+//
+// TODO: should integrate into writeFile
+function mkpathObs(path) {
+    return Rx.Observable.create(function(observer) {
+        mkpath(path, function(err) {
+            if (err) {
+                observer.onError();
+            } else {
+                observer.onNext();
+                observer.onComplete();
+            }
+        });
+    });
+}
+
 // 
 // Narrows results to include only directories.
 // 
@@ -363,7 +381,8 @@ observableProto.writeFiles = function(pathSelector, dataSelector) {
 		
 		return writeFile(path, data);
 	});
-}
+};
+
 
 Rx.fs = {
 	cleardir: cleardir,
@@ -380,7 +399,8 @@ Rx.fs = {
 	stats: stats,
 	unlink: unlink,
 	unlinkdir: unlinkdir,
-	writeFile: writeFile
+	writeFile: writeFile,
+    mkpath: mkpathObs
 };
 
 module.exports = Rx;
